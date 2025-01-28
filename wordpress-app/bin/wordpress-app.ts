@@ -5,14 +5,17 @@ import { WordpressVpcStack } from '../lib/wordpress-vpc-stack';
 
 const app = new cdk.App();
 
-new WordpressVpcStack(app, 'WordpressVpcStack', {
-  
-});
+const deployment = { "stack" : "A" } 
 
-new WordpressAppStack(app, 'WordpressAppStack', {
-  
-});
+if (['V'].includes(deployment.stack)) {
+    new WordpressVpcStack(app, 'WordpressVpcStack', {
+    });
+}
 
+if (['A'].includes(deployment.stack)) {
+    new WordpressAppStack(app, 'WordpressAppStack', {
+    });
+}
 
 // new WordpressAppStack(app, 'WordpressAppStack', {
 //   /* If you don't specify 'env', this stack will be environment-agnostic.

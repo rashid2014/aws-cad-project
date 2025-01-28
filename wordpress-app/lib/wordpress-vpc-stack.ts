@@ -22,10 +22,10 @@ export class WordpressVpcStack extends cdk.Stack {
       createInternetGateway: true,
     });
 
-    const ssmVPC = new ssm.StringParameter(this, 'vpcSsmParameter', {
-      parameterName: '/AWS/CAD/VPC/ID',
-      stringValue: customVpc.vpcId,
-    });
+    // const ssmVPC = new ssm.StringParameter(this, 'vpcSsmParameter', {
+    //   parameterName: '/AWS/CAD/VPC/ID',
+    //   stringValue: customVpc.vpcId,
+    // });
 
 
     //SG-ALB with SSM Param
@@ -44,10 +44,10 @@ export class WordpressVpcStack extends cdk.Stack {
       ec2.Port.tcp(443)
     )
 
-    const ssmALBSG = new ssm.StringParameter(this, 'albSGSsmParameter', {
-      parameterName: '/AWS/CAD/ALB/SG/ID',
-      stringValue: albSecurityGroup.securityGroupId,
-    });
+    // const ssmALBSG = new ssm.StringParameter(this, 'albSGSsmParameter', {
+    //   parameterName: '/AWS/CAD/ALB/SG/ID',
+    //   stringValue: albSecurityGroup.securityGroupId,
+    // });
     
     //SG-EC2 with SSM Param
     const ec2SecurityGroup = new ec2.SecurityGroup(this, 'EC2SecurityGroup', { 
@@ -69,10 +69,10 @@ export class WordpressVpcStack extends cdk.Stack {
       ec2.Port.tcp(443)
     )
 
-    const ssmEC2SG = new ssm.StringParameter(this, 'ec2SGSsmParameter', {
-      parameterName: '/AWS/CAD/EC2/SG/ID',
-      stringValue: ec2SecurityGroup.securityGroupId,
-    });
+    // const ssmEC2SG = new ssm.StringParameter(this, 'ec2SGSsmParameter', {
+    //   parameterName: '/AWS/CAD/EC2/SG/ID',
+    //   stringValue: ec2SecurityGroup.securityGroupId,
+    // });
 
     //SG-RDS with SSM Param
 
@@ -85,10 +85,10 @@ export class WordpressVpcStack extends cdk.Stack {
       ec2.Port.tcp(3306)
     )
 
-    const ssmRDSSG = new ssm.StringParameter(this, 'RDSSGSsmParameter', {
-      parameterName: '/AWS/CAD/RDS/SG/ID',
-      stringValue: rdsSecurityGroup.securityGroupId,
-    });
+    // const ssmRDSSG = new ssm.StringParameter(this, 'RDSSGSsmParameter', {
+    //   parameterName: '/AWS/CAD/RDS/SG/ID',
+    //   stringValue: rdsSecurityGroup.securityGroupId,
+    // });
 
 
     //RDS-Subnet-Group with SSM Param
@@ -100,14 +100,14 @@ export class WordpressVpcStack extends cdk.Stack {
       // the properties below are optional
       subnetGroupName: 'RDS-SUBNET-GROUP',
       vpcSubnets: {
-        subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       },
     });
 
-    const ssmRDSSubnetGroup = new ssm.StringParameter(this, 'RDSSubnetGroupSsmParameter', {
-      parameterName: '/AWS/CAD/RDS/SUBNET/GROUP',
-      stringValue: rdsSubnetGroup.subnetGroupName,
-    });
+    // const ssmRDSSubnetGroup = new ssm.StringParameter(this, 'RDSSubnetGroupSsmParameter', {
+    //   parameterName: '/AWS/CAD/RDS/SUBNET/GROUP',
+    //   stringValue: rdsSubnetGroup.subnetGroupName,
+    // });
 
   }
 }
