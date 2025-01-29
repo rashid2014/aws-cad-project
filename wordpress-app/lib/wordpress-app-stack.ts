@@ -55,7 +55,7 @@ export class WordpressAppStack extends cdk.Stack {
       scheme: 'internet-facing',
       name: 'Wordpress-ALB',
       securityGroups: [cdk.Fn.importValue("Application-ALB-SG-ID")],
-      subnets: ['subnet-04c9ba63fc9156b5c', 'subnet-0a13f46850e189e7b'],
+      subnets: [cdk.Fn.importValue("Public-Subnet1-ID"), cdk.Fn.importValue("Public-Subnet2-ID")],
       type: 'application',
     });
 
@@ -143,7 +143,7 @@ export class WordpressAppStack extends cdk.Stack {
         launchTemplateId: ec2LaunchTemplate.attrLaunchTemplateId,
       },
       targetGroupArns: [cfnTargetGroup.attrTargetGroupArn],
-      vpcZoneIdentifier: ['subnet-04c9ba63fc9156b5c', 'subnet-0a13f46850e189e7b'],
+      vpcZoneIdentifier: [cdk.Fn.importValue("Private-Subnet1-ID"), cdk.Fn.importValue("Private-Subnet2-ID")],
     });
 
     const cfnScalingPolicy = new autoscaling.CfnScalingPolicy(this, 'MyCfnScalingPolicy', {
@@ -157,12 +157,6 @@ export class WordpressAppStack extends cdk.Stack {
         },
       },
     });
-
-
-
-    
-
-
 
   }
 }

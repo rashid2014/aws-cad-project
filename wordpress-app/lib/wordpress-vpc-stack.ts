@@ -27,17 +27,29 @@ export class WordpressVpcStack extends cdk.Stack {
       exportName: 'Application-VPC-ID',
     });
     
-    // const publicSubnets = customVpc.publicSubnets;
+    const publicSubnets = customVpc.publicSubnets;
 
-    // new cdk.CfnOutput(this, 'PublicSubnetID1Output', {
-    //   value: publicSubnets[0].subnetId,
-    //   exportName: 'Public-Subnet1-ID',
-    // });
+    new cdk.CfnOutput(this, 'PublicSubnetID1Output', {
+      value: publicSubnets[0].subnetId,
+      exportName: 'Public-Subnet1-ID',
+    });
 
-    // new cdk.CfnOutput(this, 'PublicSubnetID1Output', {
-    //   value: publicSubnets[1].subnetId,
-    //   exportName: 'Public-Subnet2-ID',
-    // });
+    new cdk.CfnOutput(this, 'PublicSubnetID2Output', {
+      value: publicSubnets[1].subnetId,
+      exportName: 'Public-Subnet2-ID',
+    });
+
+    const privateSubnets = customVpc.privateSubnets;
+
+    new cdk.CfnOutput(this, 'PrivateSubnetID1Output', {
+      value: privateSubnets[0].subnetId,
+      exportName: 'Private-Subnet1-ID',
+    });
+
+    new cdk.CfnOutput(this, 'PrivateSubnetID2Output', {
+      value: privateSubnets[1].subnetId,
+      exportName: 'Private-Subnet2-ID',
+    });
 
 
 
