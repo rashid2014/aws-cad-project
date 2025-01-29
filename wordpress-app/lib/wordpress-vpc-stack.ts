@@ -22,6 +22,34 @@ export class WordpressVpcStack extends cdk.Stack {
       createInternetGateway: true,
     });
 
+    new cdk.CfnOutput(this, 'CustomVPCIDOutput', {
+      value: customVpc.vpcId,
+      exportName: 'Application-VPC-ID',
+    });
+    
+    const publicSubnets = customVpc.publicSubnets;
+
+    new cdk.CfnOutput(this, 'PublicSubnetID1Output', {
+      value: publicSubnets[0].subnetId,
+      exportName: 'Public-Subnet1-ID',
+    });
+
+    new cdk.CfnOutput(this, 'PublicSubnetID1Output', {
+      value: publicSubnets[1].subnetId,
+      exportName: 'Public-Subnet2-ID',
+    });
+
+
+
+
+    // const publicSubnetIds = customVpc.publicSubnets.map(subnet => subnet.subnetId);
+
+    // Output the public subnet IDs
+    new cdk.CfnOutput(this, 'CustomVPCPublicSubnetIds', {
+      value: JSON.stringify(publicSubnetIds),
+      exportName: 'Application-PUBLIC-SUBNET-IDS',
+    });
+
     // const ssmVPC = new ssm.StringParameter(this, 'vpcSsmParameter', {
     //   parameterName: '/AWS/CAD/VPC/ID',
     //   stringValue: customVpc.vpcId,
@@ -43,6 +71,11 @@ export class WordpressVpcStack extends cdk.Stack {
       ec2.Peer.ipv4("0.0.0.0/0"),
       ec2.Port.tcp(443)
     )
+
+    new cdk.CfnOutput(this, 'ALBSGOutput', {
+      value: albSecurityGroup.securityGroupId,
+      exportName: 'Application-ALB-SG-ID',
+    });
 
     // const ssmALBSG = new ssm.StringParameter(this, 'albSGSsmParameter', {
     //   parameterName: '/AWS/CAD/ALB/SG/ID',
@@ -69,6 +102,11 @@ export class WordpressVpcStack extends cdk.Stack {
       ec2.Port.tcp(443)
     )
 
+    new cdk.CfnOutput(this, 'EC2SGOutput', {
+      value: ec2SecurityGroup.securityGroupId,
+      exportName: 'Application-EC2-SG-ID',
+    });
+
     // const ssmEC2SG = new ssm.StringParameter(this, 'ec2SGSsmParameter', {
     //   parameterName: '/AWS/CAD/EC2/SG/ID',
     //   stringValue: ec2SecurityGroup.securityGroupId,
@@ -84,6 +122,11 @@ export class WordpressVpcStack extends cdk.Stack {
       ec2SecurityGroup,
       ec2.Port.tcp(3306)
     )
+
+    new cdk.CfnOutput(this, 'RDSSGOutput', {
+      value: rdsSecurityGroup.securityGroupId,
+      exportName: 'Application-RDS-SG-ID',
+    });
 
     // const ssmRDSSG = new ssm.StringParameter(this, 'RDSSGSsmParameter', {
     //   parameterName: '/AWS/CAD/RDS/SG/ID',
@@ -102,6 +145,11 @@ export class WordpressVpcStack extends cdk.Stack {
       vpcSubnets: {
         subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       },
+    });
+
+    new cdk.CfnOutput(this, 'RDSSubnetGroupOutput', {
+      value: rdsSubnetGroup.subnetGroupName,
+      exportName: 'Application-RDS-SUBNET-GROUP-NAME',
     });
 
     // const ssmRDSSubnetGroup = new ssm.StringParameter(this, 'RDSSubnetGroupSsmParameter', {
