@@ -27,17 +27,17 @@ export class WordpressVpcStack extends cdk.Stack {
       exportName: 'Application-VPC-ID',
     });
     
-    const publicSubnets = customVpc.publicSubnets;
+    // const publicSubnets = customVpc.publicSubnets;
 
-    new cdk.CfnOutput(this, 'PublicSubnetID1Output', {
-      value: publicSubnets[0].subnetId,
-      exportName: 'Public-Subnet1-ID',
-    });
+    // new cdk.CfnOutput(this, 'PublicSubnetID1Output', {
+    //   value: publicSubnets[0].subnetId,
+    //   exportName: 'Public-Subnet1-ID',
+    // });
 
-    new cdk.CfnOutput(this, 'PublicSubnetID1Output', {
-      value: publicSubnets[1].subnetId,
-      exportName: 'Public-Subnet2-ID',
-    });
+    // new cdk.CfnOutput(this, 'PublicSubnetID1Output', {
+    //   value: publicSubnets[1].subnetId,
+    //   exportName: 'Public-Subnet2-ID',
+    // });
 
 
 
@@ -45,10 +45,10 @@ export class WordpressVpcStack extends cdk.Stack {
     // const publicSubnetIds = customVpc.publicSubnets.map(subnet => subnet.subnetId);
 
     // Output the public subnet IDs
-    new cdk.CfnOutput(this, 'CustomVPCPublicSubnetIds', {
-      value: JSON.stringify(publicSubnetIds),
-      exportName: 'Application-PUBLIC-SUBNET-IDS',
-    });
+    // new cdk.CfnOutput(this, 'CustomVPCPublicSubnetIds', {
+    //   value: JSON.stringify(publicSubnetIds),
+    //   exportName: 'Application-PUBLIC-SUBNET-IDS',
+    // });
 
     // const ssmVPC = new ssm.StringParameter(this, 'vpcSsmParameter', {
     //   parameterName: '/AWS/CAD/VPC/ID',

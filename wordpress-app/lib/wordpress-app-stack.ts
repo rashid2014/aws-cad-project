@@ -27,36 +27,26 @@ export class WordpressAppStack extends cdk.Stack {
     
     // const publicSubnets = existingVpc.publicSubnets;
 
-    const EC2UserData = `
-      #!/bin/bash
-      echo "Running custom user data script"
-      amazon-linux-extras enable php7.4
-      sudo yum install -y php php-cli php-fpm php-mysqlnd php-xml php-mbstring php-curl php-zip
-      yum install httpd php-mysql -y
-      yum update -y
-      cd /var/www/html
-      echo "healthy" > healthy.html
-      wget https://wordpress.org/wordpress-6.7.1.tar.gz
-      tar -xzf wordpress-6.7.1.tar.gz
-      cp -r wordpress/* /var/www/html/
-      rm -rf wordpress
-      rm -rf wordpress-6.7.1.tar.gz
-      chmod -R 755 wp-content
-      chown -R apache:apache wp-content
-      service httpd start
-      chkconfig httpd on
-    `;
-    const ec2LaunchTemplate = new ec2.CfnLaunchTemplate(this, 'EC2LaunchTemplate', {
-      launchTemplateName: "Wordpress-Launch-Template",
-      versionDescription: "v1",
-      launchTemplateData: {
-        instanceType: 't2.micro',
-        imageId: "ami-0d1e3f2707b2b8925",
-        userData: cdk.Fn.base64(EC2UserData),
-        securityGroupIds: [cdk.Fn.importValue("Application-EC2-SG-ID")],
-      },
+    // RDS Instance
+    const wordpressRDS = new rds.CfnDBInstance(this, "WordpressRDS", {
+      dbInstanceIdentifier: "wordpress-db",
+      engine: "mysql",
+      engineVersion: '8.0.40',
+      dbInstanceClass: "db.t3.micro", 
+      allocatedStorage: "20", 
+      masterUsername: "admin", 
+      masterUserPassword: "Metro123456", 
+      dbSubnetGroupName: cdk.Fn.importValue('Application-RDS-SUBNET-GROUP-NAME'),
+      vpcSecurityGroups:[cdk.Fn.importValue('Application-RDS-SG-ID')],
+      publiclyAccessible: false,
+      backupRetentionPeriod: 7,
+      multiAz: false,
+      dbName: "metrodb"
     });
 
+    new cdk.CfnOutput(this, "RDSInstanceEndpoint", {
+      value: wordpressRDS.attrEndpointAddress,
+    });
 
     // ALB Load Balancer
 
@@ -101,7 +91,46 @@ export class WordpressAppStack extends cdk.Stack {
     });
 
     // AutoScaling Group
+    const dbname = "metrodb";
+    const password = "Metro123456";
+    const username = "admin";
+    const hostname = wordpressRDS.attrEndpointAddress;
 
+    const EC2UserData = `
+      #!/bin/bash
+      echo "Running custom user data script"
+      amazon-linux-extras enable php7.4
+      sudo yum install -y php php-cli php-fpm php-mysqlnd php-xml php-mbstring php-curl php-zip
+      yum install httpd php-mysql -y
+      yum update -y
+      cd /var/www/html
+      echo "healthy" > healthy.html
+      wget https://wordpress.org/wordpress-6.7.1.tar.gz
+      tar -xzf wordpress-6.7.1.tar.gz
+      cp -r wordpress/* /var/www/html/
+      rm -rf wordpress
+      rm -rf wordpress-6.7.1.tar.gz
+      chmod -R 755 wp-content
+      chown -R apache:apache wp-content
+      mv wp-config-sample.php wp-config.php
+      sed -i 's/database_name_here/${dbname}/g' wp-config.php
+      sed -i 's/username_here/${username}/g' wp-config.php
+      sed -i 's/password_here/${password}/g' wp-config.php
+      sed -i 's/localhost/${hostname}/g' wp-config.php
+      service httpd start
+      chkconfig httpd on
+    `;
+    const ec2LaunchTemplate = new ec2.CfnLaunchTemplate(this, 'EC2LaunchTemplate', {
+      launchTemplateName: "Wordpress-Launch-Template",
+      versionDescription: "v1",
+      launchTemplateData: {
+        instanceType: 't2.micro',
+        imageId: "ami-0d1e3f2707b2b8925",
+        userData: cdk.Fn.base64(EC2UserData),
+        securityGroupIds: [cdk.Fn.importValue("Application-EC2-SG-ID")],
+      },
+    });
+    ec2LaunchTemplate.node.addDependency(wordpressRDS);
 
     const cfnAutoScalingGroup = new autoscaling.CfnAutoScalingGroup(this, 'MyCfnAutoScalingGroup', {
       maxSize: '20',
@@ -131,26 +160,7 @@ export class WordpressAppStack extends cdk.Stack {
 
 
 
-    // RDS Instance
-    const wordpressRDS = new rds.CfnDBInstance(this, "WordpressRDS", {
-      dbInstanceIdentifier: "wordpress-db",
-      engine: "mysql",
-      engineVersion: '8.0.40',
-      dbInstanceClass: "db.t3.micro", 
-      allocatedStorage: "20", 
-      masterUsername: "admin", 
-      masterUserPassword: "Metro123456", 
-      dbSubnetGroupName: cdk.Fn.importValue('Application-RDS-SUBNET-GROUP-NAME'),
-      vpcSecurityGroups:[cdk.Fn.importValue('Application-RDS-SG-ID')],
-      publiclyAccessible: false,
-      backupRetentionPeriod: 7,
-      multiAz: false,
-      dbName: "metrodb"
-    });
-
-    new cdk.CfnOutput(this, "RDSInstanceEndpoint", {
-      value: wordpressRDS.attrEndpointAddress,
-    });
+    
 
 
 
